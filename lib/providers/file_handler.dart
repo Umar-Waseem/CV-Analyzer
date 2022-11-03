@@ -1,46 +1,37 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 
+class DropDown {
+  File file;
+  bool isOpen;
+
+  DropDown({required this.file, required this.isOpen});
+}
+
 class FileHandler {
-  static FilePickerResult? result;
+  FilePickerResult? result;
+  static List<DropDown> files = [];
+
+  static void toggleOpen(int index) {
+    files[index].isOpen = !files[index].isOpen;
+  }
 
   static void pickFile() async {
-    result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-    );
-  }
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(allowMultiple: true);
 
-  static void uploadFile() {
     if (result != null) {
-      List<File> files = result!.paths.map((path) => File(path!)).toList();
-      log(files.toString());
+      files = result.paths.map(
+        (path) {
+          return DropDown(file: File(path!), isOpen: false);
+        },
+      ).toList();
+      for (var file in files) {
+        print(file.file.readAsStringSync());
+      }
     } else {
-      // User canceled the picker
-    }
-  }
-
-  static void displayFileNames() {
-    // save names of files picked in a list
-    log("File names: ");
-    try {
-      List<String?> fileNames = result!.names;
-      log(fileNames.toString());
-    } catch (e) {
-      log(e.toString(), name: "Error");
-    }
-  }
-
-  static void readFileData() {
-    // read text file data and save
-    log("File data: ");
-    try {
-      List<String?> fileData =
-          result!.files.map((e) => e.bytes.toString()).toList();
-      log(fileData.toString());
-    } catch (e) {
-      log(e.toString(), name: "Error");
+      // User cancelled the picker
     }
   }
 }

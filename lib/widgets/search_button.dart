@@ -1,4 +1,7 @@
+import 'package:cv_analyzer/providers/search_handler.dart';
 import 'package:flutter/material.dart';
+
+import '../providers/file_handler.dart';
 
 class SearchButton extends StatelessWidget {
   const SearchButton({
@@ -18,7 +21,16 @@ class SearchButton extends StatelessWidget {
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
       ),
-      onPressed: () {},
+      onPressed: () {
+        List<int> values = SearchHandler.bruteForceSearch(
+          FileHandler.files[0].file.readAsStringSync(),
+          searchValue,
+        );
+
+        for (var element in values) {
+          print(element);
+        }
+      },
       label: const Text("Search"),
     );
   }

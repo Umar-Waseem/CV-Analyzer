@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../providers/file_handler.dart';
 
-class UploadButton extends StatelessWidget {
+class UploadButton extends StatefulWidget {
   const UploadButton({
     Key? key,
   }) : super(key: key);
 
+  @override
+  State<UploadButton> createState() => _UploadButtonState();
+}
+
+class _UploadButtonState extends State<UploadButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
@@ -19,10 +24,9 @@ class UploadButton extends StatelessWidget {
       ),
       label: const Text("Upload"),
       onPressed: () async {
-        FileHandler.pickFile();
-        FileHandler.uploadFile();
-        FileHandler.displayFileNames();
-        FileHandler.readFileData();
+        setState(() {
+          FileHandler.pickFile();
+        });
       },
     );
   }
