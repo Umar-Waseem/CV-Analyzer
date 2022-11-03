@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'widgets/search_button.dart';
 import 'widgets/search_field.dart';
+import 'widgets/upload_button.dart';
 
-class InitialWidget extends StatelessWidget {
+class InitialWidget extends StatefulWidget {
   const InitialWidget({super.key});
 
+  @override
+  State<InitialWidget> createState() => _InitialWidgetState();
+}
+
+class _InitialWidgetState extends State<InitialWidget> {
+  final TextEditingController searchController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -14,18 +22,15 @@ class InitialWidget extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              const SearchField(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  padding: const EdgeInsets.all(20.0),
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.black54,
-                ),
-                onPressed: () {},
-                child: const Text("Search"),
+              SearchField(searchController: searchController),
+              const SizedBox(height: 50),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SearchButton(searchValue: searchController.text),
+                  const SizedBox(width: 30),
+                  const UploadButton(),
+                ],
               ),
             ],
           ),
