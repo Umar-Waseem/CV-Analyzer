@@ -10,7 +10,6 @@ class DropDown {
 }
 
 class FileHandler {
-  FilePickerResult? result;
   static List<DropDown> files = [];
 
   static void toggleOpen(int index) {

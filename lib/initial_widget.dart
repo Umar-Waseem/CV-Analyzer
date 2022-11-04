@@ -1,6 +1,7 @@
 import 'package:cv_analyzer/providers/file_handler.dart';
 import 'package:flutter/material.dart';
 
+import 'providers/search_handler.dart';
 import 'widgets/search_button.dart';
 import 'widgets/search_field.dart';
 import 'widgets/seperator.dart';
@@ -15,6 +16,8 @@ class InitialWidget extends StatefulWidget {
 
 class _InitialWidgetState extends State<InitialWidget> {
   final TextEditingController searchController = TextEditingController();
+  List<int> values = [];
+  List<TextSpan> subTextSpans = [];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -30,9 +33,22 @@ class _InitialWidgetState extends State<InitialWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SearchButton(searchValue: searchController.text),
+                    SearchButton(
+                      onPress: () {
+                        setState(() {
+                          subTextSpans = SearchHandler.searchedWordsView(
+                              searchController.text);
+                        });
+                      },
+                    ),
                     const SizedBox(width: 30),
-                    const UploadButton(),
+                    UploadButton(
+                      onPressed: () {
+                        setState(() {
+                          FileHandler.pickFile();
+                        });
+                      },
+                    ),
                   ],
                 ),
                 const SizedBox(height: 30),
@@ -57,7 +73,9 @@ class _InitialWidgetState extends State<InitialWidget> {
                               Text(
                                 FileHandler.files[index].file.path,
                                 style: const TextStyle(
-                                    color: Colors.red, fontSize: 20),
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                ),
                               ),
                               const Spacer(),
                               IconButton(
@@ -73,9 +91,19 @@ class _InitialWidgetState extends State<InitialWidget> {
                             ],
                           ),
                           if (FileHandler.files[index].isOpen)
-                            Text(
-                              FileHandler.files[index].file.readAsStringSync(),
-                            ),
+                            // FileHandler.files[index].file.readAsStringSync(),
+                            subTextSpans.isEmpty
+                                ? Text(
+                                    FileHandler.files[index].file
+                                        .readAsStringSync(),
+                                  )
+                                : RichText(
+                                    text: TextSpan(
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                      children: subTextSpans,
+                                    ),
+                                  ),
                         ],
                       ),
                     );

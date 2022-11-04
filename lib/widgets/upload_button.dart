@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../providers/file_handler.dart';
-
 class UploadButton extends StatefulWidget {
   const UploadButton({
     Key? key,
+    required this.onPressed,
   }) : super(key: key);
+
+  // on press
+
+  final Function() onPressed;
 
   @override
   State<UploadButton> createState() => _UploadButtonState();
@@ -23,11 +26,7 @@ class _UploadButtonState extends State<UploadButton> {
         backgroundColor: Colors.green,
       ),
       label: const Text("Upload"),
-      onPressed: () async {
-        setState(() {
-          FileHandler.pickFile();
-        });
-      },
+      onPressed: widget.onPressed,
     );
   }
 }

@@ -1,16 +1,18 @@
-import 'package:cv_analyzer/providers/search_handler.dart';
 import 'package:flutter/material.dart';
 
-import '../providers/file_handler.dart';
-
-class SearchButton extends StatelessWidget {
+class SearchButton extends StatefulWidget {
   const SearchButton({
     Key? key,
-    required this.searchValue,
+    required this.onPress,
   }) : super(key: key);
 
-  final String searchValue;
+  final Function() onPress;
 
+  @override
+  State<SearchButton> createState() => _SearchButtonState();
+}
+
+class _SearchButtonState extends State<SearchButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
@@ -21,16 +23,7 @@ class SearchButton extends StatelessWidget {
         foregroundColor: Colors.white,
         backgroundColor: Colors.black,
       ),
-      onPressed: () {
-        List<int> values = SearchHandler.bruteForceSearch(
-          FileHandler.files[0].file.readAsStringSync(),
-          searchValue,
-        );
-
-        for (var element in values) {
-          print(element);
-        }
-      },
+      onPressed: widget.onPress,
       label: const Text("Search"),
     );
   }
