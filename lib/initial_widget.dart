@@ -10,6 +10,8 @@ import 'widgets/upload_button.dart';
 
 enum SearchFilter { matchCase, matchWholeWord, matchBoth, none }
 
+enum FunctionFilter { bruteForce, kmp, rk }
+
 class InitialWidget extends StatefulWidget {
   const InitialWidget({super.key});
 
@@ -21,9 +23,14 @@ class _InitialWidgetState extends State<InitialWidget> {
   final TextEditingController searchController = TextEditingController();
   List<int> values = [];
   List<List<TextSpan>> subTextSpans = [];
+
   bool matchCase = false;
   bool matchWholeWord = false;
   bool isEnabled = false;
+
+  bool isBruteForce = true;
+  bool isKMP = false;
+  bool isRK = false;
 
   @override
   void initState() {
@@ -54,30 +61,42 @@ class _InitialWidgetState extends State<InitialWidget> {
                       onPress: isEnabled && FileHandler.files.isNotEmpty
                           ? () {
                               setState(() {
+                                FunctionFilter function =
+                                    FunctionFilter.bruteForce;
+                                if (isKMP) {
+                                  function = FunctionFilter.kmp;
+                                } else if (isRK) {
+                                  function = FunctionFilter.rk;
+                                }
+
                                 subTextSpans = [];
                                 if (matchCase && matchWholeWord) {
                                   subTextSpans =
-                                      SearchHandler.searchedWordsViewBruteForce(
+                                      SearchHandler.searchedWordsView(
                                     searchController.text,
                                     SearchFilter.matchBoth,
+                                    function,
                                   );
                                 } else if (matchCase) {
                                   subTextSpans =
-                                      SearchHandler.searchedWordsViewBruteForce(
+                                      SearchHandler.searchedWordsView(
                                     searchController.text,
                                     SearchFilter.matchCase,
+                                    function,
                                   );
                                 } else if (matchWholeWord) {
                                   subTextSpans =
-                                      SearchHandler.searchedWordsViewBruteForce(
+                                      SearchHandler.searchedWordsView(
                                     searchController.text,
                                     SearchFilter.matchWholeWord,
+                                    function,
                                   );
                                 } else {
                                   subTextSpans =
-                                      SearchHandler.searchedWordsViewBruteForce(
+                                      SearchHandler.searchedWordsView(
                                     searchController.text,
                                     SearchFilter.none,
+                                    function,
                                   );
                                 }
                               });
@@ -125,8 +144,62 @@ class _InitialWidgetState extends State<InitialWidget> {
                         }),
                   ],
                 ),
-                // radio buttons
-                
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        const Text("Brute Force Seacrh"),
+                        Checkbox(
+                            value: isBruteForce,
+                            onChanged: (value) {
+                              setState(() {
+                                if (!value!) {
+                                  return;
+                                }
+                                isBruteForce = value;
+                                isKMP = false;
+                                isRK = false;
+                              });
+                            }),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text("KMP Search"),
+                        Checkbox(
+                            value: isKMP,
+                            onChanged: (value) {
+                              setState(() {
+                                if (!value!) {
+                                  return;
+                                }
+                                isKMP = value;
+                                isBruteForce = false;
+                                isRK = false;
+                              });
+                            }),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text("Rabin Karp Search"),
+                        Checkbox(
+                            value: isRK,
+                            onChanged: (value) {
+                              setState(() {
+                                if (!value!) {
+                                  return;
+                                }
+                                isRK = value;
+                                isBruteForce = false;
+                                isKMP = false;
+                              });
+                            }),
+                      ],
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 30),
                 ListView.separated(
                   separatorBuilder: (context, index) {
