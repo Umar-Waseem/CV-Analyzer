@@ -2,10 +2,13 @@ import 'package:cv_analyzer/providers/file_handler.dart';
 import 'package:flutter/material.dart';
 
 import 'providers/search_handler.dart';
+import 'widgets/clear_button.dart';
 import 'widgets/search_button.dart';
 import 'widgets/search_field.dart';
 import 'widgets/seperator.dart';
 import 'widgets/upload_button.dart';
+
+enum SearchFilter { matchCase, matchWholeWord, matchBoth, none }
 
 class InitialWidget extends StatefulWidget {
   const InitialWidget({super.key});
@@ -17,7 +20,21 @@ class InitialWidget extends StatefulWidget {
 class _InitialWidgetState extends State<InitialWidget> {
   final TextEditingController searchController = TextEditingController();
   List<int> values = [];
-  List<TextSpan> subTextSpans = [];
+  List<List<TextSpan>> subTextSpans = [];
+  bool matchCase = false;
+  bool matchWholeWord = false;
+  bool isEnabled = false;
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      setState(() {
+        isEnabled = searchController.text.isNotEmpty;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -34,12 +51,38 @@ class _InitialWidgetState extends State<InitialWidget> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SearchButton(
-                      onPress: () {
-                        setState(() {
-                          subTextSpans = SearchHandler.searchedWordsView(
-                              searchController.text);
-                        });
-                      },
+                      onPress: isEnabled && FileHandler.files.isNotEmpty
+                          ? () {
+                              setState(() {
+                                subTextSpans = [];
+                                if (matchCase && matchWholeWord) {
+                                  subTextSpans =
+                                      SearchHandler.searchedWordsViewBruteForce(
+                                    searchController.text,
+                                    SearchFilter.matchBoth,
+                                  );
+                                } else if (matchCase) {
+                                  subTextSpans =
+                                      SearchHandler.searchedWordsViewBruteForce(
+                                    searchController.text,
+                                    SearchFilter.matchCase,
+                                  );
+                                } else if (matchWholeWord) {
+                                  subTextSpans =
+                                      SearchHandler.searchedWordsViewBruteForce(
+                                    searchController.text,
+                                    SearchFilter.matchWholeWord,
+                                  );
+                                } else {
+                                  subTextSpans =
+                                      SearchHandler.searchedWordsViewBruteForce(
+                                    searchController.text,
+                                    SearchFilter.none,
+                                  );
+                                }
+                              });
+                            }
+                          : null,
                     ),
                     const SizedBox(width: 30),
                     UploadButton(
@@ -49,8 +92,41 @@ class _InitialWidgetState extends State<InitialWidget> {
                         });
                       },
                     ),
+                    const SizedBox(width: 30),
+                    ClearButton(
+                      onPress: () {
+                        setState(() {
+                          subTextSpans = [];
+                        });
+                      },
+                    ),
                   ],
                 ),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Match Case"),
+                    Checkbox(
+                        value: matchCase,
+                        onChanged: (value) {
+                          setState(() {
+                            matchCase = value!;
+                          });
+                        }),
+                    const SizedBox(width: 10),
+                    const Text("Match Whole Word"),
+                    Checkbox(
+                        value: matchWholeWord,
+                        onChanged: (value) {
+                          setState(() {
+                            matchWholeWord = value!;
+                          });
+                        }),
+                  ],
+                ),
+                // radio buttons
+                
                 const SizedBox(height: 30),
                 ListView.separated(
                   separatorBuilder: (context, index) {
@@ -101,7 +177,7 @@ class _InitialWidgetState extends State<InitialWidget> {
                                     text: TextSpan(
                                       style:
                                           const TextStyle(color: Colors.white),
-                                      children: subTextSpans,
+                                      children: subTextSpans[index],
                                     ),
                                   ),
                         ],

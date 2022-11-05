@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
 
-class SearchButton extends StatefulWidget {
-  const SearchButton({
+class ClearButton extends StatelessWidget {
+  const ClearButton({
     Key? key,
     required this.onPress,
   }) : super(key: key);
 
-  final Function()? onPress;
+  final Function() onPress;
 
-  @override
-  State<SearchButton> createState() => _SearchButtonState();
-}
-
-class _SearchButtonState extends State<SearchButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      icon: const Icon(Icons.search),
+      onPressed: onPress,
       style: ElevatedButton.styleFrom(
         splashFactory: NoSplash.splashFactory,
         padding: const EdgeInsets.all(20.0),
         foregroundColor: Colors.white,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.red,
       ),
-      onPressed: widget.onPress,
-      label: const Text("Search"),
+      icon: const Icon(Icons.clear),
+      label: const Text("Clear"),
     );
   }
 }
